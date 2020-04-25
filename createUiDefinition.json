@@ -1,0 +1,164 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/0.1.2-preview/CreateUIDefinition.MultiVm.json#",
+    "handler": "Microsoft.Azure.CreateUIDef",
+    "version": "0.1.2-preview",
+    "parameters": {
+        "basics": [ 
+            {
+                "name": "text1",
+                "type": "Microsoft.Common.InfoBox",
+                "visible": true,
+                "options": {
+                  "icon": "Info",
+                  "text": "deployment must be done in two phases. In Phase 1 all resources will be created except the onPrem Connectivity. After Phase1 deployment you have to manuall install and configure Azure Data Factory Integration Runtime (IR). If IR is working you can deploy Phase2 to deploy content (Datasets,Pipelines) in ADF. Klick here for the docu",
+                  "uri": "https://github.com/verovis-GmbH/adv_sapdatapool"
+                          }
+              },
+
+       
+
+              {
+                "name": "DeploymentPhase",
+                "type": "Microsoft.Common.DropDown",
+                "label": "Deployment Phase",
+                "defaultValue": "Phase1",
+                "toolTip": "deployment must be done in two phases. In Phase 1 all resources will be created except the onPrem Connectivity. After Phase1 deployment you have to manuall install and configure Azure Data Factory Integration Runtime (IR). If IR is working you can deploy Phase2 to deploy content (Datasets,Pipelines) in ADF.",
+                "constraints": {
+                    "allowedValues": [
+                      {
+                        "label": "Phase 1 - Initial Creation",
+                        "value": "Phase1"
+                      },
+                      {
+                        "label": "Phase 2 - Content Deployment",
+                        "value": "Phase2"
+                      }
+                    ],
+                    "required": true
+                  },
+                   "visible": true
+              },
+              {
+                "name": "ResourceNamePrefix",
+                "type": "Microsoft.Common.TextBox",
+                "label": "ResourceNamePrefix",
+                "defaultValue": "verovis",
+                "toolTip": "provide a prefix so that all created resources will start with same name.",
+                "constraints": {
+                    "required": true,
+                    "regex": "^[a-z0-9A-Z-]{1,10}$",
+                    "validationMessage": "The prefix must be be between 1 and 10 characters long and contain letters, numbers and hyphens only."
+                },
+                "visible": "[equals(steps('basics').DeploymentPhase, 'Phase1')]"
+              },
+
+              {
+                "name": "SAPServer",
+                "type": "Microsoft.Common.TextBox",
+                "label": "SAPServerName",
+                "defaultValue": "",
+                "toolTip": "provide ip-adress or hostname of sap server",
+                "constraints": {
+                    "required": false,
+                    "regex": "^[a-z0-9A-Z-]{1,30}$",
+                    "validationMessage": "The name must be be between 1 and 30 characters long and contain letters, numbers and hyphens only."
+                },
+                "visible": "[equals(steps('basics').DeploymentPhase, 'Phase2')]"
+              },
+              {
+                "name": "SAPUsername",
+                "type": "Microsoft.Common.TextBox",
+                "label": "SAP User Name",
+                "defaultValue": "",
+                "toolTip": "provide SAP username which is used for accessing ECC Data",
+                "constraints": {
+                    "required": false,
+                    "regex": "^[a-z0-9A-Z-]{1,30}$",
+                    "validationMessage": "The name must be be between 1 and 30 characters long and contain letters, numbers and hyphens only."
+                },
+                "visible": "[equals(steps('basics').DeploymentPhase, 'Phase2')]"
+              }
+              ,
+              {
+                "name": "SAPPassword",
+                "type": "Microsoft.Common.PasswordBox",
+                "label": {
+                    "password": "SAP User Password",
+                    "confirmPassword": "Confirm SAP User password"
+                  },
+        
+                "toolTip": "provide password for SAP Username (can also be changed later in ADF LinkedService)",
+                "constraints": {
+                    "required": false
+                },
+                "options": {
+                  "hideConfirmation": false
+                },
+                
+                "visible": "[equals(steps('basics').DeploymentPhase, 'Phase2')]"
+              }
+              ,
+              {
+                "name": "SAPSystemNo",
+                "type": "Microsoft.Common.TextBox",
+                "label": "SAP System Number",
+                "defaultValue": "",
+                "toolTip": "provide SAP System Number",
+                "constraints": {
+                    "required": false,
+                    "regex": "^[a-z0-9A-Z-]{1,30}$",
+                    "validationMessage": "The name must be be between 1 and 30 characters long and contain letters, numbers and hyphens only."
+                },
+                "visible": "[equals(steps('basics').DeploymentPhase, 'Phase2')]"
+              }
+              ,
+              {
+                "name": "SAPClientId",
+                "type": "Microsoft.Common.TextBox",
+                "label": "SAP ClientId",
+                "defaultValue": "",
+                "toolTip": "provide SAP Client ID",
+                "constraints": {
+                    "required": false,
+                    "regex": "^[a-z0-9A-Z-]{1,30}$",
+                    "validationMessage": "The name must be be between 1 and 30 characters long and contain letters, numbers and hyphens only."
+                },
+                "visible": "[equals(steps('basics').DeploymentPhase, 'Phase2')]"
+              }
+              ,
+              {
+                "name": "SAPLanguage",
+                "type": "Microsoft.Common.TextBox",
+                "label": "SAP Language",
+                "defaultValue": "",
+                "toolTip": "provide 2-Digit language-code for connecting SAP. sample values EN, DE",
+                "constraints": {
+                    "required": false,
+                    "regex": "^[a-z0-9A-Z-]{2,2}$",
+                    "validationMessage": "The name must be 2 characters long and contain only letters"
+                },
+                "visible": "[equals(steps('basics').DeploymentPhase, 'Phase2')]"
+              }
+            
+
+
+
+        ],
+        "steps": [  
+
+        ],
+        "outputs": { 
+            "location": "[location()]",
+            "DeploymentPhase":"[basics('DeploymentPhase')]",
+            "ResourceNamePrefix": "[basics('ResourceNamePrefix')]",
+
+            "SAPServer"  : "[Phase2Config('SAPServer')]",
+            "SAPUsername": "[Phase2Config('SAPUsername')]",
+            "SAPPassword": "[Phase2Config('SAPPassword')]",
+            "SAPSystemNo": "[Phase2Config('SAPSystemNo')]",
+            "SAPClientId": "[Phase2Config('SAPClientId')]",
+            "SAPLanguage": "[Phase2Config('SAPLanguage')]" 
+            
+        } 
+     }
+  }
